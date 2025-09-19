@@ -50,7 +50,7 @@ jobs:
           path: build/test-results/test/*.xml
           reporter: java-junit
 
-  deploy-degv:
+  deploy-dev:
     needs: [test]
     runs-on: ubuntu-latest
     environment: dev
