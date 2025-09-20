@@ -41,8 +41,12 @@ tasks.named('test') {
     useJUnitPlatform()
     
     reports {
-        xml.required = true
-        html.required = true
+        junitXml {
+            required = true
+        }
+        html {
+            required = true
+        }
     }
     
     testLogging {
