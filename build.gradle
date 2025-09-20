@@ -39,4 +39,14 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
 }

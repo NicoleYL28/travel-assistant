@@ -42,9 +42,18 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
+      - name: List test results directory
+        if: always()
+        run: |
+          echo "Checking test results directory..."
+          ls -la build/ || echo "build directory not found"
+          ls -la build/test-results/ || echo "test-results directory not found"
+          ls -la build/test-results/test/ || echo "test directory not found"
+          find . -name "*.xml" -path "*/test-results/*" || echo "No XML files found"
+
       - name: Generate test report
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: always() && hashFiles('build/test-results/test/*.xml') != ''
         with:
           name: "[Report] JUnit Tests Report"
           path: build/test-results/test/*.xml
