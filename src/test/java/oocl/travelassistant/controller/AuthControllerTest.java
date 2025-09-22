@@ -1,18 +1,11 @@
 package oocl.travelassistant.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import oocl.travelassistant.dto.UserLoginDTO;
-import oocl.travelassistant.dto.UserRegisterDTO;
-import oocl.travelassistant.dto.UserResponseDTO;
 import oocl.travelassistant.entity.User;
 import oocl.travelassistant.repository.UserRepository;
-import oocl.travelassistant.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -149,7 +142,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void should_login_success_with_username() throws Exception {
+    void should_login_success_with_username_and_token() throws Exception {
         User user = new User();
         user.setUsername("jack");
         user.setPasswordHash(passwordEncoder.encode("123456"));
@@ -165,11 +158,13 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("jack"));
+                .andExpect(jsonPath("$.username").value("jack"))
+                .andExpect(jsonPath("$.token").isString());
+        ;
     }
 
     @Test
-    void should_login_success_with_email() throws Exception {
+    void should_login_success_with_email_and_token() throws Exception {
         User user = new User();
         user.setEmail("jack@example.com");
         user.setPasswordHash(passwordEncoder.encode("123456"));
@@ -185,7 +180,9 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("jack@example.com"));
+                .andExpect(jsonPath("$.email").value("jack@example.com"))
+                .andExpect(jsonPath("$.token").isString());
+        ;
     }
 
     @Test
