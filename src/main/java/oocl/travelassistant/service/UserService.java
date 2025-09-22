@@ -66,7 +66,7 @@ public class UserService {
         User user = userOpt.get();
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPasswordHash())) {
-            throw new PasswordErrorException("密码错误");
+            throw new PasswordErrorException("账号或密码错误");
         }
 
         return toResponseDTO(user);

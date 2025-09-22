@@ -222,7 +222,7 @@ public class AuthControllerTest {
                         .content(body))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value(401))
-                .andExpect(jsonPath("$.message").value("密码错误"));
+                .andExpect(jsonPath("$.message").value("账号或密码错误"));
     }
 }
 
