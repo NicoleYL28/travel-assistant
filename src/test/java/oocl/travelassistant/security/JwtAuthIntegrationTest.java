@@ -1,6 +1,8 @@
 package oocl.travelassistant.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import oocl.travelassistant.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ class JwtAuthIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    UserRepository userRepository;
 
     String email = "jwt_test@example.com";
     String username = "jwt_user";
@@ -58,6 +63,12 @@ class JwtAuthIntegrationTest {
         token = (String) json.get("token");
     }
 
+    @AfterEach
+    void cleanup() {
+        userRepository.findByEmail(email).ifPresent(userRepository::delete);
+        userRepository.findByUsername(username).ifPresent(userRepository::delete);
+    }
+
     @Test
     void should_fail_without_token() throws Exception {
         mockMvc.perform(get("/api/user/profile"))
@@ -86,4 +97,3 @@ class JwtAuthIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 }
-
