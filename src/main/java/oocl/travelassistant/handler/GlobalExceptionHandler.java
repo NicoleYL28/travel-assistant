@@ -1,4 +1,4 @@
-package oocl.travelassistant.controller;
+package oocl.travelassistant.handler;
 
 import oocl.travelassistant.exception.*;
 import org.springframework.http.HttpStatus;
