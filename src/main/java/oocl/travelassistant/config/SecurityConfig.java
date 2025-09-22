@@ -1,11 +1,17 @@
 package oocl.travelassistant.config;
 
+import oocl.travelassistant.security.CustomUserDetailsService;
+import oocl.travelassistant.security.JwtAuthenticationFilter;
+import oocl.travelassistant.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -15,20 +21,24 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Spring Security 配置
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // 关掉 CSRF（方便 Postman 测试）
-                .csrf(csrf -> csrf.disable())
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtTokenProvider tokenProvider,
+                                           CustomUserDetailsService userDetailsService) throws Exception {
 
-                // 配置请求规则
+        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(tokenProvider, userDetailsService);
+
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 放行 Swagger / 静态资源 / 注册登录接口
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/auth/**").permitAll()
-                        // 其他接口全放行（开发阶段用）
-                        .anyRequest().permitAll()
-                );
+                        .requestMatchers("/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api/register",
+                                "/api/login").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -2,7 +2,8 @@ package oocl.travelassistant.controller;
 
 import oocl.travelassistant.dto.UserLoginDTO;
 import oocl.travelassistant.dto.UserRegisterDTO;
-import oocl.travelassistant.dto.UserResponseDTO;
+import oocl.travelassistant.dto.UserLoginResponseDTO;
+import oocl.travelassistant.dto.UserRegisterResponseDto;
 import oocl.travelassistant.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,12 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/register")
-    public UserResponseDTO register(@RequestBody UserRegisterDTO dto) {
+    public UserRegisterResponseDto register(@RequestBody UserRegisterDTO dto) {
         return userService.register(dto);
     }
 
     @PostMapping("/login")
-    public UserResponseDTO login(@RequestBody UserLoginDTO dto) {
+    public UserLoginResponseDTO login(@RequestBody UserLoginDTO dto) {
         return userService.login(dto);
     }
 }

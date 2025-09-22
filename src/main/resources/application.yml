@@ -15,3 +15,7 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
+
+jwt:
+  secret: ${JWT_SECRET:ReplaceWithAtLeast32BytesSecretKeyForHS256!!!!}
+  expire-ms: ${JWT_EXPIRE_MS:3600000}
