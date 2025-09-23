@@ -76,7 +76,7 @@ public class SecurityConfig {
                 "https://travel-agent-frontend-dev-dev.up.railway.app"
         ));
         // 允许的请求方式
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         // 允许的请求头
         configuration.setAllowedHeaders(List.of("*"));
         // 是否允许携带 cookie/Authorization

@@ -174,11 +174,23 @@ public class TravelPlanService {
         }
 
         if (travelPlanDTO.getDailyPlan() != null) {
-            existingPlan.setDailyPlans(mapDailyPlansFromDTO(travelPlanDTO.getDailyPlan(), existingPlan));
+            // 清除现有的日程计划
+            if (existingPlan.getDailyPlans() != null) {
+                existingPlan.getDailyPlans().clear();
+            }
+            // 重新设置新的日程计划
+            List<DailyPlan> newDailyPlans = mapDailyPlansFromDTO(travelPlanDTO.getDailyPlan(), existingPlan);
+            existingPlan.setDailyPlans(newDailyPlans);
         }
 
         if (travelPlanDTO.getTips() != null) {
-            existingPlan.setTips(mapTipsFromDTO(travelPlanDTO.getTips(), existingPlan));
+            // 清除现有的提示
+            if (existingPlan.getTips() != null) {
+                existingPlan.getTips().clear();
+            }
+            // 重新设置新的提示
+            List<TravelTip> newTips = mapTipsFromDTO(travelPlanDTO.getTips(), existingPlan);
+            existingPlan.setTips(newTips);
         }
 
         TravelPlan result = travelPlanRepository.save(existingPlan);
