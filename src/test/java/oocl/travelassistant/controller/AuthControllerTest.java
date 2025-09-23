@@ -48,7 +48,8 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.username").value("jack"))
-                .andExpect(jsonPath("$.email").doesNotExist());
+                .andExpect(jsonPath("$.email").doesNotExist())
+                .andExpect(jsonPath("$.token").isString()); // 新增断言 token
     }
 
     @Test
@@ -65,7 +66,8 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.email").value("jack@example.com"))
-                .andExpect(jsonPath("$.username").doesNotExist());
+                .andExpect(jsonPath("$.username").doesNotExist())
+                .andExpect(jsonPath("$.token").isString()); // 新增断言 token
     }
 
     @Test
@@ -220,4 +222,3 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("账号或密码错误"));
     }
 }
-

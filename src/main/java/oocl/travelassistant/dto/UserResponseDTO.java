@@ -1,6 +1,9 @@
 package oocl.travelassistant.dto;
 
-public class UserLoginResponseDTO {
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserResponseDTO {
     private Long id;
     private String username;
     private String email;

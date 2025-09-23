@@ -2,7 +2,6 @@ package oocl.travelassistant.controller;
 
 import oocl.travelassistant.dto.TagDTO;
 import oocl.travelassistant.service.TagService;
-import oocl.travelassistant.service.UserTagService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
