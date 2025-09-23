@@ -1,8 +1,8 @@
 package oocl.travelassistant.controller;
 
+import lombok.RequiredArgsConstructor;
 import oocl.travelassistant.dto.TravelPlanDTO;
 import oocl.travelassistant.service.TravelPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/travel-plans")
+@RequiredArgsConstructor
 public class TravelPlanController {
 
-    @Autowired
-    private TravelPlanService travelPlanService;
+    private final TravelPlanService travelPlanService;
 
     @PostMapping
     public ResponseEntity<TravelPlanDTO> createTravelPlan(@RequestBody TravelPlanDTO travelPlanDTO, Authentication authentication) {
@@ -47,5 +47,25 @@ public class TravelPlanController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TravelPlanDTO> updateTravelPlan(@PathVariable Long id, @RequestBody TravelPlanDTO travelPlanDTO, Authentication authentication) {
+        Long userId = Long.valueOf(authentication.getName());
+        TravelPlanDTO updatedPlan = travelPlanService.updateTravelPlan(id, userId, travelPlanDTO);
+        if (updatedPlan == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedPlan);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TravelPlanDTO> partialUpdateTravelPlan(@PathVariable Long id, @RequestBody TravelPlanDTO travelPlanDTO, Authentication authentication) {
+        Long userId = Long.valueOf(authentication.getName());
+        TravelPlanDTO updatedPlan = travelPlanService.partialUpdateTravelPlan(id, userId, travelPlanDTO);
+        if (updatedPlan == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedPlan);
     }
 }

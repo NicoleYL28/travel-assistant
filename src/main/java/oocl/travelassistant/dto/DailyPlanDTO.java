@@ -1,7 +1,6 @@
 package oocl.travelassistant.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public class DailyPlanDTO {
     private Integer day;
