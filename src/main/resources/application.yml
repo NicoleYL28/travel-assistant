@@ -15,6 +15,7 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
+    out-of-order: true
 
 jwt:
   secret: ${JWT_SECRET:ReplaceWithAtLeast32BytesSecretKeyForHS256!!!!}
