@@ -350,120 +350,111 @@ mindmap
       RESTful API
 ```
 
-## 分层技术架构图
+## 纯技术架构图
 
 ```mermaid
 graph TB
-    %% 表现层 - Presentation Layer  
-    subgraph "🎨 表现层 Presentation Layer"
-        REACT["React前端应用<br/>- TagSelector<br/>- TripDetails<br/>- DayDetails<br/>- TripSummary"]
-        MOBILE["移动端应用<br/>- 响应式设计<br/>- PWA支持"]
-        BROWSER["Web浏览器<br/>- Chrome/Firefox<br/>- Safari/Edge"]
+    %% 前端技术栈 - Frontend Stack
+    subgraph "🎨 前端技术栈 Frontend Stack"
+        REACT["React 18.x"]
+        CSS["CSS3"]
+        JS["JavaScript ES6+"]
+        AXIOS["Axios HTTP客户端"]
     end
     
-    %% AI服务层 - AI Service Layer
-    subgraph "🤖 AI服务层 AI Service Layer"
-        COZE["Coze Agent API<br/>- 智能方案生成<br/>- 自然语言处理<br/>- 个性化推荐"]
-        NLP["NLP引擎<br/>- 需求理解<br/>- 语义分析"]
-        RECOM["推荐系统<br/>- 个性化算法<br/>- 用户画像"]
+    %% AI服务技术 - AI Service Stack
+    subgraph "🤖 AI服务技术 AI Service Stack"
+        COZE["Coze Agent API"]
+        REST_CLIENT["REST Client"]
     end
     
-    %% 网关层 - Gateway Layer  
-    subgraph "🛡️ 网关层 Gateway Layer"
-        CORS["CORS跨域配置<br/>- 前端域名白名单<br/>- 安全策略"]
-        JWT_FILTER["JWT认证过滤器<br/>- Token验证<br/>- 权限检查"]
-        SECURITY["Spring Security<br/>- 安全配置<br/>- 认证授权"]
+    %% 安全技术栈 - Security Stack
+    subgraph "🛡️ 安全技术栈 Security Stack"
+        JWT["JWT Token"]
+        BCRYPT["BCrypt"]
+        CORS["CORS"]
+        SPRING_SEC["Spring Security 6.x"]
     end
     
-    %% 控制层 - Controller Layer
-    subgraph "🎮 控制层 Controller Layer"
-        AUTH_CTRL["AuthController<br/>- 用户登录注册<br/>- Token生成"]
-        USER_CTRL["UserController<br/>- 用户信息管理<br/>- 个人资料"]
-        TRAVEL_CTRL["TravelPlanController<br/>- 旅行计划CRUD<br/>- 方案管理"]
+    %% 后端技术栈 - Backend Stack
+    subgraph "⚙️ 后端技术栈 Backend Stack"
+        JAVA["Java 17"]
+        SPRING_BOOT["Spring Boot 3.5.6"]
+        SPRING_DATA["Spring Data JPA"]
+        LOMBOK["Lombok"]
     end
     
-    %% 服务层 - Service Layer
-    subgraph "⚙️ 服务层 Service Layer"
-        USER_SVC["UserService<br/>- 用户业务逻辑<br/>- 密码加密"]
-        TRAVEL_SVC["TravelPlanService<br/>- 旅行计划逻辑<br/>- 数据处理"]
-        SECURITY_SVC["CustomUserDetailsService<br/>- 用户详情加载<br/>- 权限管理"]
-        JWT_PROVIDER["JwtTokenProvider<br/>- Token生成验证<br/>- 过期处理"]
+    %% 数据库技术 - Database Stack
+    subgraph "💾 数据库技术 Database Stack"
+        MYSQL["MySQL"]
+        H2["H2 Database"]
+        FLYWAY["Flyway Migration"]
+        HIBERNATE["Hibernate ORM"]
     end
     
-    %% 数据访问层 - Repository Layer
-    subgraph "💾 数据访问层 Repository Layer"
-        USER_REPO["UserRepository<br/>- 用户数据访问<br/>- JPA Repository"]
-        TRAVEL_REPO["TravelPlanRepository<br/>- 旅行计划数据<br/>- 自定义查询"]
-        JPA["Spring Data JPA<br/>- ORM映射<br/>- 事务管理"]
+    %% 构建部署技术 - Build & Deploy Stack
+    subgraph "🏗️ 构建部署技术 Build & Deploy Stack"
+        GRADLE["Gradle 8.14.3"]
+        DOCKER["Docker"]
+        GITHUB_ACTIONS["GitHub Actions"]
+        RAILWAY["Railway Platform"]
     end
     
-    %% 数据库层 - Database Layer
-    subgraph "🗄️ 数据库层 Database Layer"
-        MYSQL["MySQL生产环境<br/>- Railway托管<br/>- 数据持久化"]
-        H2["H2测试环境<br/>- 内存数据库<br/>- 单元测试"]
-        FLYWAY["Flyway数据迁移<br/>- 版本控制<br/>- 自动化部署"]
+    %% 开发工具 - Development Tools
+    subgraph "🔧 开发工具 Development Tools"
+        JUNIT["JUnit 5"]
+        MOCKITO["Mockito"]
+        VALIDATION["Bean Validation"]
+        JSON["Jackson JSON"]
     end
     
-    %% 基础设施层 - Infrastructure Layer
-    subgraph "🏗️ 基础设施层 Infrastructure Layer"
-        RAILWAY["Railway云平台<br/>- 应用部署<br/>- 数据库托管"]
-        DOCKER["Docker容器<br/>- 环境一致性<br/>- 容器化部署"]
-        GITHUB["GitHub Actions<br/>- CI/CD流程<br/>- 自动化测试"]
-        GRADLE["Gradle构建<br/>- 依赖管理<br/>- 项目构建"]
-    end
+    %% 技术关联关系 - 纯技术层面的依赖
+    REACT --> AXIOS
+    AXIOS --> SPRING_BOOT
+    REACT --> REST_CLIENT
+    REST_CLIENT --> COZE
     
-    %% 分层连接关系
-    REACT --> COZE
-    MOBILE --> NLP
-    BROWSER --> RECOM
+    SPRING_BOOT --> SPRING_SEC
+    SPRING_BOOT --> SPRING_DATA
+    SPRING_BOOT --> LOMBOK
+    SPRING_BOOT --> JSON
     
-    REACT --> CORS
-    MOBILE --> JWT_FILTER
-    BROWSER --> SECURITY
+    SPRING_SEC --> JWT
+    SPRING_SEC --> BCRYPT
+    SPRING_SEC --> CORS
     
-    COZE --> AUTH_CTRL
-    NLP --> TRAVEL_CTRL
-    CORS --> AUTH_CTRL
-    JWT_FILTER --> USER_CTRL
-    SECURITY --> TRAVEL_CTRL
+    SPRING_DATA --> HIBERNATE
+    HIBERNATE --> MYSQL
+    HIBERNATE --> H2
+    FLYWAY --> MYSQL
+    FLYWAY --> H2
     
-    AUTH_CTRL --> USER_SVC
-    USER_CTRL --> USER_SVC
-    TRAVEL_CTRL --> TRAVEL_SVC
-    AUTH_CTRL --> JWT_PROVIDER
+    GRADLE --> JAVA
+    GRADLE --> SPRING_BOOT
+    DOCKER --> GRADLE
+    GITHUB_ACTIONS --> DOCKER
+    RAILWAY --> DOCKER
     
-    USER_SVC --> USER_REPO
-    TRAVEL_SVC --> TRAVEL_REPO
-    SECURITY_SVC --> JPA
-    JWT_PROVIDER --> USER_REPO
-    
-    USER_REPO --> MYSQL
-    TRAVEL_REPO --> H2
-    JPA --> FLYWAY
-    
-    RAILWAY --> MYSQL
-    DOCKER --> TRAVEL_SVC
-    GITHUB --> GRADLE
-    GRADLE --> DOCKER
+    JUNIT --> JAVA
+    MOCKITO --> JUNIT
+    VALIDATION --> SPRING_BOOT
     
     %% 样式定义
-    classDef presentation fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+    classDef frontend fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
     classDef ai fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
-    classDef gateway fill:#fff3e0,stroke:#ff9800,stroke-width:3px
-    classDef controller fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
-    classDef service fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
-    classDef repository fill:#e1f5fe,stroke:#03a9f4,stroke-width:3px
+    classDef security fill:#fff3e0,stroke:#ff9800,stroke-width:3px
+    classDef backend fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
     classDef database fill:#ffebee,stroke:#f44336,stroke-width:3px
-    classDef infrastructure fill:#f5f5f5,stroke:#607d8b,stroke-width:3px
+    classDef build fill:#f5f5f5,stroke:#607d8b,stroke-width:3px
+    classDef tools fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
     
-    class REACT,MOBILE,BROWSER presentation
-    class COZE,NLP,RECOM ai
-    class CORS,JWT_FILTER,SECURITY gateway
-    class AUTH_CTRL,USER_CTRL,TRAVEL_CTRL controller
-    class USER_SVC,TRAVEL_SVC,SECURITY_SVC,JWT_PROVIDER service
-    class USER_REPO,TRAVEL_REPO,JPA repository
-    class MYSQL,H2,FLYWAY database
-    class RAILWAY,DOCKER,GITHUB,GRADLE infrastructure
+    class REACT,CSS,JS,AXIOS frontend
+    class COZE,REST_CLIENT ai
+    class JWT,BCRYPT,CORS,SPRING_SEC security
+    class JAVA,SPRING_BOOT,SPRING_DATA,LOMBOK backend
+    class MYSQL,H2,FLYWAY,HIBERNATE database
+    class GRADLE,DOCKER,GITHUB_ACTIONS,RAILWAY build
+    class JUNIT,MOCKITO,VALIDATION,JSON tools
 ```
 
 ## 技术栈详细说明
