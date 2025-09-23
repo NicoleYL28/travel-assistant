@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class TravelPlanDTO {
+    private Long id;
     private String title;
     private String overview;
     private Integer duration;
@@ -11,6 +12,14 @@ public class TravelPlanDTO {
     private List<DailyPlanDTO> dailyPlan;
     private BudgetBreakdownDTO budgetBreakdown;
     private List<String> tips;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;

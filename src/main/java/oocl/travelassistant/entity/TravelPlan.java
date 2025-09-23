@@ -28,29 +28,14 @@ public class TravelPlan {
     @Column(name = "total_budget", precision = 10, scale = 2)
     private BigDecimal totalBudget;
 
-    @Column(name = "accommodation_budget", precision = 10, scale = 2)
-    private BigDecimal accommodationBudget;
-
-    @Column(name = "food_budget", precision = 10, scale = 2)
-    private BigDecimal foodBudget;
-
-    @Column(name = "transportation_budget", precision = 10, scale = 2)
-    private BigDecimal transportationBudget;
-
-    @Column(name = "activities_budget", precision = 10, scale = 2)
-    private BigDecimal activitiesBudget;
-
-    @Column(name = "shopping_budget", precision = 10, scale = 2)
-    private BigDecimal shoppingBudget;
-
-    @Column(name = "other_budget", precision = 10, scale = 2)
-    private BigDecimal otherBudget;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(columnDefinition = "JSON")
+    private String budgetBreakdown;
 
     @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DailyPlan> dailyPlans;
@@ -117,53 +102,6 @@ public class TravelPlan {
         this.totalBudget = totalBudget;
     }
 
-    public BigDecimal getAccommodationBudget() {
-        return accommodationBudget;
-    }
-
-    public void setAccommodationBudget(BigDecimal accommodationBudget) {
-        this.accommodationBudget = accommodationBudget;
-    }
-
-    public BigDecimal getFoodBudget() {
-        return foodBudget;
-    }
-
-    public void setFoodBudget(BigDecimal foodBudget) {
-        this.foodBudget = foodBudget;
-    }
-
-    public BigDecimal getTransportationBudget() {
-        return transportationBudget;
-    }
-
-    public void setTransportationBudget(BigDecimal transportationBudget) {
-        this.transportationBudget = transportationBudget;
-    }
-
-    public BigDecimal getActivitiesBudget() {
-        return activitiesBudget;
-    }
-
-    public void setActivitiesBudget(BigDecimal activitiesBudget) {
-        this.activitiesBudget = activitiesBudget;
-    }
-
-    public BigDecimal getShoppingBudget() {
-        return shoppingBudget;
-    }
-
-    public void setShoppingBudget(BigDecimal shoppingBudget) {
-        this.shoppingBudget = shoppingBudget;
-    }
-
-    public BigDecimal getOtherBudget() {
-        return otherBudget;
-    }
-
-    public void setOtherBudget(BigDecimal otherBudget) {
-        this.otherBudget = otherBudget;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -179,6 +117,14 @@ public class TravelPlan {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getBudgetBreakdown() {
+        return budgetBreakdown;
+    }
+
+    public void setBudgetBreakdown(String budgetBreakdown) {
+        this.budgetBreakdown = budgetBreakdown;
     }
 
     public List<DailyPlan> getDailyPlans() {

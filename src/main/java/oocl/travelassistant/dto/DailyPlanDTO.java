@@ -1,15 +1,17 @@
 package oocl.travelassistant.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class DailyPlanDTO {
     private Integer day;
+    private String date;
     private String theme;
     private String morning;
     private String afternoon;
     private String evening;
     private MealsDTO meals;
-    private String accommodation;
+    private AccommodationDTO accommodation;
     private TransportationDTO transportation;
     private BigDecimal dailyCost;
 
@@ -19,6 +21,14 @@ public class DailyPlanDTO {
 
     public void setDay(Integer day) {
         this.day = day;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getTheme() {
@@ -61,11 +71,11 @@ public class DailyPlanDTO {
         this.meals = meals;
     }
 
-    public String getAccommodation() {
+    public AccommodationDTO getAccommodation() {
         return accommodation;
     }
 
-    public void setAccommodation(String accommodation) {
+    public void setAccommodation(AccommodationDTO accommodation) {
         this.accommodation = accommodation;
     }
 

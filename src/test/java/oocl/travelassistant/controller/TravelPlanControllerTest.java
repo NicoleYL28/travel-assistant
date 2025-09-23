@@ -1,7 +1,13 @@
 package oocl.travelassistant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import oocl.travelassistant.dto.*;
+import oocl.travelassistant.dto.AccommodationDTO;
+import oocl.travelassistant.dto.BudgetBreakdownDTO;
+import oocl.travelassistant.dto.DailyPlanDTO;
+import oocl.travelassistant.dto.MealsDTO;
+import oocl.travelassistant.dto.TransportationDTO;
+import oocl.travelassistant.dto.TravelPlanDTO;
+import oocl.travelassistant.entity.TravelPlan;
 import oocl.travelassistant.entity.User;
 import oocl.travelassistant.repository.TravelPlanRepository;
 import oocl.travelassistant.repository.UserRepository;
@@ -17,16 +23,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class TravelPlanControllerTest {
+public class TravelPlanControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,17 +47,18 @@ class TravelPlanControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private User testUser;
     private String jwtToken;
 
     @BeforeEach
     void setUp() {
         travelPlanRepository.deleteAll();
         userRepository.deleteAll();
-
-        User testUser = new User();
+        
+        testUser = new User();
         testUser.setUsername("testuser");
         testUser.setPasswordHash(passwordEncoder.encode("password"));
-        userRepository.save(testUser);
+        testUser = userRepository.save(testUser);
 
         jwtToken = loginAndGetToken();
     }
@@ -61,20 +66,20 @@ class TravelPlanControllerTest {
     private String loginAndGetToken() {
         try {
             String loginBody = """
-                    {
-                      "usernameOrEmail": "testuser",
-                      "password": "password"
-                    }
-                    """;
-
+                {
+                  "usernameOrEmail": "testuser",
+                  "password": "password"
+                }
+                """;
+            
             String response = mockMvc.perform(post("/api/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginBody))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(loginBody))
                     .andExpect(status().isOk())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
-
+                    
             return objectMapper.readTree(response).get("token").asText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get JWT token", e);
@@ -97,6 +102,7 @@ class TravelPlanControllerTest {
 
         DailyPlanDTO dailyPlan1 = new DailyPlanDTO();
         dailyPlan1.setDay(1);
+        dailyPlan1.setDate("2025-09-24");  // 添加date字段
         dailyPlan1.setTheme("Arrival Day");
         dailyPlan1.setMorning("Arrive at airport");
         dailyPlan1.setAfternoon("Check in hotel");
@@ -108,29 +114,39 @@ class TravelPlanControllerTest {
         meals.setDinner("Fine dining");
         dailyPlan1.setMeals(meals);
 
+        // 创建AccommodationDTO
+        AccommodationDTO accommodation = new AccommodationDTO();
+        accommodation.setName("Grand Hotel");
+        accommodation.setAddress("123 Main St");
+        accommodation.setRoomType("Deluxe Room");
+        accommodation.setPrice(new BigDecimal("200.00"));
+        accommodation.setBookingLink("https://booking.com/hotel123");
+        dailyPlan1.setAccommodation(accommodation);
+
         TransportationDTO transportation = new TransportationDTO();
         transportation.setDetails("Flight AA123");
         transportation.setCost(new BigDecimal("500.00"));
+        transportation.setBookingLink("https://airline.com/booking456");  // 添加bookingLink
         dailyPlan1.setTransportation(transportation);
 
         dailyPlan1.setDailyCost(new BigDecimal("800.00"));
 
-        travelPlanDTO.setDailyPlan(List.of(dailyPlan1));
+        travelPlanDTO.setDailyPlan(Arrays.asList(dailyPlan1));
         travelPlanDTO.setTips(Arrays.asList("Bring sunscreen", "Learn basic phrases"));
-
+        
         return travelPlanDTO;
     }
 
     @Test
     void should_create_travel_plan_successfully() throws Exception {
         TravelPlanDTO travelPlanDTO = createTravelPlanDTO();
-
+        
         String body = objectMapper.writeValueAsString(travelPlanDTO);
-
+        
         mockMvc.perform(post("/api/travel-plans")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Test Travel Plan"))
                 .andExpect(jsonPath("$.overview").value("A wonderful trip"))
@@ -142,15 +158,15 @@ class TravelPlanControllerTest {
     void should_get_user_travel_plans() throws Exception {
         TravelPlanDTO travelPlanDTO = createTravelPlanDTO();
         String body = objectMapper.writeValueAsString(travelPlanDTO);
-
+        
         mockMvc.perform(post("/api/travel-plans")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/travel-plans")
-                        .header("Authorization", "Bearer " + jwtToken))
+                .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].title").value("Test Travel Plan"));
@@ -160,16 +176,16 @@ class TravelPlanControllerTest {
     void should_get_travel_plan_by_id() throws Exception {
         TravelPlanDTO travelPlanDTO = createTravelPlanDTO();
         String body = objectMapper.writeValueAsString(travelPlanDTO);
-
+        
         String response = mockMvc.perform(post("/api/travel-plans")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
+                
         Long travelPlanId = objectMapper.readTree(response).get("id").asLong();
 
         mockMvc.perform(get("/api/travel-plans/" + travelPlanId))
@@ -181,7 +197,7 @@ class TravelPlanControllerTest {
     @Test
     void should_return_404_when_travel_plan_not_found() throws Exception {
         mockMvc.perform(get("/api/travel-plans/999")
-                        .header("Authorization", "Bearer " + jwtToken))
+                .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());
     }
 
@@ -189,20 +205,20 @@ class TravelPlanControllerTest {
     void should_delete_travel_plan() throws Exception {
         TravelPlanDTO travelPlanDTO = createTravelPlanDTO();
         String body = objectMapper.writeValueAsString(travelPlanDTO);
-
+        
         String response = mockMvc.perform(post("/api/travel-plans")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
-        long travelPlanId = objectMapper.readTree(response).get("id").asLong();
+                
+        Long travelPlanId = objectMapper.readTree(response).get("id").asLong();
 
         mockMvc.perform(delete("/api/travel-plans/" + travelPlanId)
-                        .header("Authorization", "Bearer " + jwtToken))
+                .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent());
     }
 }

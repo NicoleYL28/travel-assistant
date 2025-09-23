@@ -20,6 +20,9 @@ public class DailyPlan {
     @Column(name = "day_number", nullable = false)
     private Integer dayNumber;
 
+    @Column(name="date")
+    private String date;
+
     private String theme;
 
     @Column(columnDefinition = "TEXT")
@@ -40,14 +43,11 @@ public class DailyPlan {
     @Column(columnDefinition = "TEXT")
     private String dinner;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "JSON")
     private String accommodation;
 
-    @Column(name = "transportation_details", columnDefinition = "TEXT")
-    private String transportationDetails;
-
-    @Column(name = "transportation_cost", precision = 10, scale = 2)
-    private BigDecimal transportationCost;
+    @Column(columnDefinition = "JSON")
+    private String transportation;
 
     @Column(name = "daily_cost", precision = 10, scale = 2)
     private BigDecimal dailyCost;
@@ -140,20 +140,12 @@ public class DailyPlan {
         this.accommodation = accommodation;
     }
 
-    public String getTransportationDetails() {
-        return transportationDetails;
+    public String getTransportation() {
+        return transportation;
     }
 
-    public void setTransportationDetails(String transportationDetails) {
-        this.transportationDetails = transportationDetails;
-    }
-
-    public BigDecimal getTransportationCost() {
-        return transportationCost;
-    }
-
-    public void setTransportationCost(BigDecimal transportationCost) {
-        this.transportationCost = transportationCost;
+    public void setTransportation(String transportation) {
+        this.transportation = transportation;
     }
 
     public BigDecimal getDailyCost() {
@@ -162,5 +154,13 @@ public class DailyPlan {
 
     public void setDailyCost(BigDecimal dailyCost) {
         this.dailyCost = dailyCost;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
