@@ -6,9 +6,14 @@
 graph TB
     %% 用户端
     subgraph "用户端 Client Side"
-        WEB["Web浏览器"]
+        WEB["Web浏览器 - 前端应用"]
         MOBILE["移动应用"]
         API_CLIENT["API客户端/测试工具"]
+    end
+    
+    %% AI服务
+    subgraph "AI服务 AI Services"
+        COZE["Coze Agent API - 旅游方案生成"]
     end
     
     %% Railway云平台
@@ -20,10 +25,6 @@ graph TB
         subgraph "数据库服务 Database Service"
             DB[("MySQL Database - 用户数据 & 旅行计划")]
         end
-        
-        subgraph "网络服务 Network Service"
-            DOMAIN["自定义域名 + SSL"]
-        end
     end
     
     %% 外部服务（未来扩展）
@@ -32,18 +33,22 @@ graph TB
         WEATHER["天气服务 API"]
     end
     
-    %% 连接关系
-    WEB --> DOMAIN
-    MOBILE --> DOMAIN
-    API_CLIENT --> DOMAIN
-    DOMAIN --> APP
+    %% 连接关系 - 体现业务流程
+    WEB -->|1. 生成旅游方案| COZE
+    COZE -->|2. 返回生成的方案| WEB
+    WEB -->|3. 保存/管理方案| APP
+    MOBILE --> COZE
+    MOBILE --> APP
+    API_CLIENT --> APP
     APP --> DB
     APP -.-> MAP
     APP -.-> WEATHER
     
     %% 样式
     classDef future fill:#f9f9f9,stroke:#999,stroke-dasharray: 5 5
+    classDef ai fill:#e1f5fe,stroke:#0277bd,stroke-width:3px
     class MAP,WEATHER future
+    class COZE ai
 ```
 
 ## 详细系统架构
@@ -52,9 +57,14 @@ graph TB
 graph TB
     %% 用户端
     subgraph "用户端 Client Side"
-        WEB["Web浏览器"]
+        WEB["Web浏览器 - 前端应用"]
         MOBILE["移动应用"]
         API_CLIENT["API客户端"]
+    end
+    
+    %% AI服务层
+    subgraph "AI服务层 AI Service Layer"
+        COZE_API["Coze Agent API - AI旅游方案生成"]
     end
     
     %% Railway部署环境
@@ -99,12 +109,16 @@ graph TB
         FLYWAY["Flyway数据库迁移 - 版本控制"]
     end
     
-    %% 连接关系
-    WEB --> AUTH_CTRL
-    WEB --> USER_CTRL
-    WEB --> PLAN_CTRL
-    MOBILE --> AUTH_CTRL
-    API_CLIENT --> HEALTH
+    %% 业务流程连接关系
+    WEB -->|1. 用户输入需求| COZE_API
+    COZE_API -->|2. 生成旅游方案| WEB
+    WEB -->|3. 用户认证| AUTH_CTRL
+    WEB -->|4. 保存方案| PLAN_CTRL
+    WEB -->|5. 用户管理| USER_CTRL
+    
+    MOBILE -->|AI方案生成| COZE_API
+    MOBILE -->|数据交互| AUTH_CTRL
+    API_CLIENT -->|健康检查| HEALTH
     
     AUTH_CTRL --> JWT_FILTER
     USER_CTRL --> JWT_FILTER
@@ -130,6 +144,10 @@ graph TB
     FLYWAY --> PLANS_TABLE
     FLYWAY --> DAILY_TABLE
     FLYWAY --> TIPS_TABLE
+    
+    %% 样式
+    classDef ai fill:#e1f5fe,stroke:#0277bd,stroke-width:3px
+    class COZE_API ai
 ```
 
 ## 实体关系图 (ERD)
@@ -250,11 +268,59 @@ graph LR
     HEALTH_CHECK --> PUBLIC_URL
 ```
 
+## 业务流程架构
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 用户
+    participant F as 🌐 前端应用
+    participant C as 🤖 Coze Agent API
+    participant B as 🏃‍♂️ Spring Boot 后端
+    participant D as 🗄️ MySQL 数据库
+
+    Note over U,D: 旅游方案生成与管理流程
+    
+    %% 用户注册登录
+    U->>F: 1. 访问应用
+    F->>B: 2. 用户注册/登录
+    B->>D: 3. 验证用户信息
+    D-->>B: 4. 返回用户数据
+    B-->>F: 5. 返回JWT令牌
+    
+    %% AI方案生成
+    U->>F: 6. 输入旅游需求
+    F->>C: 7. 调用Coze Agent API
+    Note over C: AI智能分析用户需求<br/>生成个性化旅游方案
+    C-->>F: 8. 返回生成的旅游方案
+    F-->>U: 9. 展示旅游方案
+    
+    %% 方案保存管理
+    U->>F: 10. 选择保存方案
+    F->>B: 11. 保存旅游方案 (JWT认证)
+    B->>D: 12. 存储方案到数据库
+    D-->>B: 13. 确认保存成功
+    B-->>F: 14. 返回保存结果
+    F-->>U: 15. 显示保存成功
+    
+    %% 方案查看管理
+    U->>F: 16. 查看我的方案
+    F->>B: 17. 获取用户方案列表
+    B->>D: 18. 查询用户方案
+    D-->>B: 19. 返回方案列表
+    B-->>F: 20. 返回方案数据
+    F-->>U: 21. 展示方案列表
+```
+
 ## 技术栈总览
 
 ```mermaid
 mindmap
   root((旅行助手 技术栈))
+    AI服务
+      Coze Agent API
+      智能方案生成
+      自然语言处理
+      个性化推荐
     后端技术
       Java 17
       Spring Boot 3.5.6
@@ -297,6 +363,11 @@ graph TB
         ACTIONS["⚙️ GitHub Actions - 自动化CI/CD"]
     end
     
+    %% AI服务
+    subgraph "🤖 Coze AI Platform"
+        COZE_AGENT["🧠 Coze Agent - 旅游方案生成"]
+    end
+    
     %% Railway云平台 - 一体化解决方案
     subgraph "🚂 Railway Cloud Platform"
         subgraph "应用运行环境"
@@ -306,10 +377,6 @@ graph TB
         
         subgraph "数据存储"
             DB_SVC["🗄️ MySQL 数据库"]
-        end
-        
-        subgraph "网络接入"
-            HTTPS["🔒 HTTPS + 自定义域名"]
         end
     end
     
@@ -327,10 +394,16 @@ graph TB
     APP_SVC --> DB_SVC
     APP_SVC --> HEALTH
     
-    WEB_USER --> HTTPS
-    MOBILE_USER --> HTTPS
-    API_USER --> HTTPS
-    HTTPS --> APP_SVC
+    %% 用户业务流程
+    WEB_USER -->|1. 生成方案| COZE_AGENT
+    WEB_USER -->|2. 保存方案| APP_SVC
+    MOBILE_USER -->|AI生成| COZE_AGENT
+    MOBILE_USER -->|数据管理| APP_SVC
+    API_USER --> APP_SVC
+    
+    %% 样式
+    classDef ai fill:#e1f5fe,stroke:#0277bd,stroke-width:3px
+    class COZE_AGENT ai
 ```
 
 ## 安全架构
@@ -378,6 +451,7 @@ graph TB
 
 | 模块 | 功能描述 | 主要组件 | 现状 |
 |------|----------|----------|------|
+| **AI方案生成** | **Coze Agent智能生成旅游方案** | **前端调用Coze API** | **🔥 核心功能** |
 | 用户管理 | 用户注册、登录、JWT认证 | AuthController, UserService, SecurityConfig | ✅ 已实现 |
 | 旅行计划 | 创建、查看、删除旅行计划 | TravelPlanController, TravelPlanService | ✅ 已实现 |
 | 预算管理 | 预算分配和跟踪 | BudgetBreakdownDTO, 预算相关实体字段 | ✅ 已实现 |
@@ -391,6 +465,8 @@ graph TB
 ## 项目特点
 
 ### ✅ **已实现的核心特性**
+- **AI驱动**: 前端集成Coze Agent API，智能生成个性化旅游方案
+- **前后端分离**: 前端负责AI交互，后端专注数据管理
 - **简洁架构**: 无复杂的网关、负载均衡器
 - **云原生**: 基于Railway平台的一体化部署
 - **自动化**: GitHub Actions完整的CI/CD流程
@@ -399,13 +475,24 @@ graph TB
 - **容器化**: Docker部署，环境一致性
 
 ### 🎯 **架构优势**
+- **智能化**: Coze AI提供专业的旅游方案生成能力
+- **职责清晰**: 前端处理AI交互，后端负责数据持久化
 - **开发简单**: 专注业务逻辑，无需复杂基础设施
 - **部署便捷**: Railway一键部署，自动扩缩容
 - **成本控制**: 按使用量付费，适合初期项目
 - **快速迭代**: 自动化CI/CD，快速交付新功能
 
+### 🔥 **核心业务流程**
+1. **用户输入** → 前端收集旅游需求
+2. **AI生成** → Coze Agent API智能生成方案
+3. **用户确认** → 前端展示生成的方案
+4. **数据保存** → 后端API保存用户选择的方案
+5. **方案管理** → 后端提供CRUD操作
+
 ### 🚀 **未来扩展计划**
-- **外部API集成**: 地图服务、天气API等
-- **前端应用**: Web或移动端用户界面
+- **AI能力增强**: 集成更多AI服务，提升方案质量
+- **实时更新**: WebSocket实现方案生成进度推送
+- **外部API集成**: 地图服务、天气API、酒店预订等
+- **移动端应用**: 原生移动应用开发
 - **缓存层**: Redis缓存提升性能
 - **文件存储**: 图片、文档上传功能
