@@ -1,11 +1,14 @@
 package oocl.travelassistant.service;
 
 import oocl.travelassistant.dto.UserLoginDTO;
-import oocl.travelassistant.dto.UserRegisterDTO;
 import oocl.travelassistant.dto.UserLoginResponseDTO;
+import oocl.travelassistant.dto.UserRegisterDTO;
 import oocl.travelassistant.dto.UserRegisterResponseDto;
 import oocl.travelassistant.entity.User;
-import oocl.travelassistant.exception.*;
+import oocl.travelassistant.exception.EmailExistsException;
+import oocl.travelassistant.exception.PasswordErrorException;
+import oocl.travelassistant.exception.UserNotFoundException;
+import oocl.travelassistant.exception.UsernameExistsException;
 import oocl.travelassistant.repository.UserRepository;
 import oocl.travelassistant.security.JwtTokenProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,12 +41,12 @@ public class UserService {
         }
 
         if (username != null && !username.trim().isEmpty() && userRepository.findByUsername(username).isPresent()) {
-                throw new UsernameExistsException("用户名已存在");
-            }
+            throw new UsernameExistsException("用户名已存在");
+        }
 
         if (email != null && !email.trim().isEmpty() && userRepository.findByEmail(email).isPresent()) {
-                throw new EmailExistsException("邮箱已存在");
-            }
+            throw new EmailExistsException("邮箱已存在");
+        }
 
 
         if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {

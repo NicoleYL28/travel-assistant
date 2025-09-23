@@ -2,8 +2,8 @@ package oocl.travelassistant.controller;
 
 import lombok.RequiredArgsConstructor;
 import oocl.travelassistant.dto.UserLoginDTO;
-import oocl.travelassistant.dto.UserRegisterDTO;
 import oocl.travelassistant.dto.UserLoginResponseDTO;
+import oocl.travelassistant.dto.UserRegisterDTO;
 import oocl.travelassistant.dto.UserRegisterResponseDto;
 import oocl.travelassistant.service.UserService;
 import org.springframework.web.bind.annotation.*;

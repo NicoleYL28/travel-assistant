@@ -14,7 +14,7 @@ public class User {
     @Column(name = "name", unique = true, length = 50)
     private String username;
 
-    @Column( unique = true, length = 100)
+    @Column(unique = true, length = 100)
     private String email;
 
     // 数据库字段是 password

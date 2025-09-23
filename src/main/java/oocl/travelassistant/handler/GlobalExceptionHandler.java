@@ -1,25 +1,31 @@
 package oocl.travelassistant.handler;
 
-import oocl.travelassistant.exception.*;
+import oocl.travelassistant.exception.EmailExistsException;
+import oocl.travelassistant.exception.PasswordErrorException;
+import oocl.travelassistant.exception.UserNotFoundException;
+import oocl.travelassistant.exception.UsernameExistsException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String CODE = "code";
+    private static final String MESSAGE = "message";
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, Object> handleIllegalArgument(IllegalArgumentException ex) {
         Map<String, Object> resp = new HashMap<>();
-        resp.put("code", 400);
-        resp.put("message", ex.getMessage());
+        resp.put(CODE, 400);
+        resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
 
@@ -28,8 +34,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String, Object> handleUsernameExists(UsernameExistsException ex) {
         Map<String, Object> resp = new HashMap<>();
-        resp.put("code", 409);
-        resp.put("message", ex.getMessage());
+        resp.put(CODE, 409);
+        resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
 
@@ -38,8 +44,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String, Object> handleEmailExists(EmailExistsException ex) {
         Map<String, Object> resp = new HashMap<>();
-        resp.put("code", 409);
-        resp.put("message", ex.getMessage());
+        resp.put(CODE, 409);
+        resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
 
@@ -48,8 +54,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String, Object> handleUserNotFound(UserNotFoundException ex) {
         Map<String, Object> resp = new HashMap<>();
-        resp.put("code", 404);
-        resp.put("message", ex.getMessage());
+        resp.put(CODE, 404);
+        resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
 
@@ -58,8 +64,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String, Object> handlePasswordError(PasswordErrorException ex) {
         Map<String, Object> resp = new HashMap<>();
-        resp.put("code", 401);
-        resp.put("message", ex.getMessage());
+        resp.put(CODE, 401);
+        resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
 
