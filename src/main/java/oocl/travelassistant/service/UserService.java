@@ -37,16 +37,14 @@ public class UserService {
             throw new IllegalArgumentException("注册必须提供用户名或邮箱之一");
         }
 
-        if (username != null && !username.trim().isEmpty()) {
-            if (userRepository.findByUsername(username).isPresent()) {
+        if (username != null && !username.trim().isEmpty() && userRepository.findByUsername(username).isPresent()) {
                 throw new UsernameExistsException("用户名已存在");
             }
-        }
-        if (email != null && !email.trim().isEmpty()) {
-            if (userRepository.findByEmail(email).isPresent()) {
+
+        if (email != null && !email.trim().isEmpty() && userRepository.findByEmail(email).isPresent()) {
                 throw new EmailExistsException("邮箱已存在");
             }
-        }
+
 
         if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("密码不能为空");
