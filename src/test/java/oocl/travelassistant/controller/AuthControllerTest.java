@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class AuthControllerTest {
+class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -160,7 +160,6 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("jack"))
                 .andExpect(jsonPath("$.token").isString());
-        ;
     }
 
     @Test
@@ -182,7 +181,6 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("jack@example.com"))
                 .andExpect(jsonPath("$.token").isString());
-        ;
     }
 
     @Test

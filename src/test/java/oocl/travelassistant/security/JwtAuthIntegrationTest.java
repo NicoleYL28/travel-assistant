@@ -44,9 +44,9 @@ class JwtAuthIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
-                          \"email\":\"%s\",
-                          \"username\":\"%s\",
-                          \"password\":\"%s\"
+                          "email":"%s",
+                          "username":"%s",
+                          "password":"%s"
                         }
                         """.formatted(email, username, password)));
 
@@ -55,8 +55,8 @@ class JwtAuthIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"usernameOrEmail\":\"%s\",
-                                  \"password\":\"%s\"
+                                  "usernameOrEmail":"%s",
+                                  "password":"%s"
                                 }
                                 """.formatted(email, password)))
                 .andExpect(status().isOk())
