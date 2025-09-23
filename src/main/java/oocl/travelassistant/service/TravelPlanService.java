@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,9 +68,10 @@ public class TravelPlanService {
                 }
 
                 return dailyPlan;
-            }).toList();
+            }).collect(Collectors.toList());
 
-            savedTravelPlan.setDailyPlans(dailyPlans);
+            // 使用可变列表以避免 Hibernate 在后续操作中抛出 UnsupportedOperationException
+            savedTravelPlan.setDailyPlans(new ArrayList<>(dailyPlans));
         }
 
         if (travelPlanDTO.getTips() != null) {
@@ -77,9 +80,9 @@ public class TravelPlanService {
                 tip.setTravelPlan(savedTravelPlan);
                 tip.setTipContent(tipContent);
                 return tip;
-            }).toList();
+            }).collect(Collectors.toList());
 
-            savedTravelPlan.setTips(tips);
+            savedTravelPlan.setTips(new ArrayList<>(tips));
         }
 
         return travelPlanRepository.save(savedTravelPlan);
