@@ -1,11 +1,10 @@
 package oocl.travelassistant.controller;
 
+import lombok.RequiredArgsConstructor;
 import oocl.travelassistant.dto.TravelPlanDTO;
 import oocl.travelassistant.entity.TravelPlan;
 import oocl.travelassistant.service.TravelPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/travel-plans")
+@RequiredArgsConstructor
 public class TravelPlanController {
 
-    @Autowired
-    private TravelPlanService travelPlanService;
+    private final TravelPlanService travelPlanService;
 
     @PostMapping
     public ResponseEntity<TravelPlan> createTravelPlan(@RequestBody TravelPlanDTO travelPlanDTO, Authentication authentication) {

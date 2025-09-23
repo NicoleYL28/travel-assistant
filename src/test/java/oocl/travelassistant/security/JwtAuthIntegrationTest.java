@@ -61,7 +61,7 @@ class JwtAuthIntegrationTest {
                                 """.formatted(email, password)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Map<?,?> json = objectMapper.readValue(res.getResponse().getContentAsString(), Map.class);
+        Map<?, ?> json = objectMapper.readValue(res.getResponse().getContentAsString(), Map.class);
         token = (String) json.get("token");
     }
 

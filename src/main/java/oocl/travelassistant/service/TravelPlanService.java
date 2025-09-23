@@ -1,22 +1,40 @@
 package oocl.travelassistant.service;
 
+import lombok.RequiredArgsConstructor;
 import oocl.travelassistant.dto.TravelPlanDTO;
 import oocl.travelassistant.entity.DailyPlan;
 import oocl.travelassistant.entity.TravelPlan;
 import oocl.travelassistant.entity.TravelTip;
 import oocl.travelassistant.repository.TravelPlanRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TravelPlanService {
 
-    @Autowired
-    private TravelPlanRepository travelPlanRepository;
+    private final TravelPlanRepository travelPlanRepository;
+
+    private static TravelPlan getTravelPlan(Long userId, TravelPlanDTO travelPlanDTO) {
+        TravelPlan travelPlan = new TravelPlan();
+        travelPlan.setUserId(userId);
+        travelPlan.setTitle(travelPlanDTO.getTitle());
+        travelPlan.setOverview(travelPlanDTO.getOverview());
+        travelPlan.setDuration(travelPlanDTO.getDuration());
+        travelPlan.setTotalBudget(travelPlanDTO.getTotalBudget());
+
+        if (travelPlanDTO.getBudgetBreakdown() != null) {
+            travelPlan.setAccommodationBudget(travelPlanDTO.getBudgetBreakdown().getAccommodation());
+            travelPlan.setFoodBudget(travelPlanDTO.getBudgetBreakdown().getFood());
+            travelPlan.setTransportationBudget(travelPlanDTO.getBudgetBreakdown().getTransportation());
+            travelPlan.setActivitiesBudget(travelPlanDTO.getBudgetBreakdown().getActivities());
+            travelPlan.setShoppingBudget(travelPlanDTO.getBudgetBreakdown().getShopping());
+            travelPlan.setOtherBudget(travelPlanDTO.getBudgetBreakdown().getOther());
+        }
+        return travelPlan;
+    }
 
     @Transactional
     public TravelPlan createTravelPlan(Long userId, TravelPlanDTO travelPlanDTO) {
@@ -48,7 +66,7 @@ public class TravelPlanService {
                 }
 
                 return dailyPlan;
-            }).collect(Collectors.toList());
+            }).toList();
 
             savedTravelPlan.setDailyPlans(dailyPlans);
         }
@@ -59,31 +77,12 @@ public class TravelPlanService {
                 tip.setTravelPlan(savedTravelPlan);
                 tip.setTipContent(tipContent);
                 return tip;
-            }).collect(Collectors.toList());
+            }).toList();
 
             savedTravelPlan.setTips(tips);
         }
 
         return travelPlanRepository.save(savedTravelPlan);
-    }
-
-    private static TravelPlan getTravelPlan(Long userId, TravelPlanDTO travelPlanDTO) {
-        TravelPlan travelPlan = new TravelPlan();
-        travelPlan.setUserId(userId);
-        travelPlan.setTitle(travelPlanDTO.getTitle());
-        travelPlan.setOverview(travelPlanDTO.getOverview());
-        travelPlan.setDuration(travelPlanDTO.getDuration());
-        travelPlan.setTotalBudget(travelPlanDTO.getTotalBudget());
-
-        if (travelPlanDTO.getBudgetBreakdown() != null) {
-            travelPlan.setAccommodationBudget(travelPlanDTO.getBudgetBreakdown().getAccommodation());
-            travelPlan.setFoodBudget(travelPlanDTO.getBudgetBreakdown().getFood());
-            travelPlan.setTransportationBudget(travelPlanDTO.getBudgetBreakdown().getTransportation());
-            travelPlan.setActivitiesBudget(travelPlanDTO.getBudgetBreakdown().getActivities());
-            travelPlan.setShoppingBudget(travelPlanDTO.getBudgetBreakdown().getShopping());
-            travelPlan.setOtherBudget(travelPlanDTO.getBudgetBreakdown().getOther());
-        }
-        return travelPlan;
     }
 
     public List<TravelPlan> getTravelPlansByUserId(Long userId) {
@@ -92,19 +91,6 @@ public class TravelPlanService {
 
     public TravelPlan getTravelPlanById(Long id) {
         return travelPlanRepository.findById(id).orElse(null);
-    }
-
-    public TravelPlan getTravelPlanByIdAndUserId(Long id, Long userId) {
-        TravelPlan travelPlan = travelPlanRepository.findById(id).orElse(null);
-        if (travelPlan != null && !travelPlan.getUserId().equals(userId)) {
-            return null; // 用户无权限访问此旅行计划
-        }
-        return travelPlan;
-    }
-
-    @Transactional
-    public void deleteTravelPlan(Long id) {
-        travelPlanRepository.deleteById(id);
     }
 
     @Transactional
