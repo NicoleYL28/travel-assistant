@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -174,27 +177,97 @@ public class TravelPlanService {
         }
 
         if (travelPlanDTO.getDailyPlan() != null) {
-            // 清除现有的日程计划
-            if (existingPlan.getDailyPlans() != null) {
-                existingPlan.getDailyPlans().clear();
-            }
-            // 重新设置新的日程计划
-            List<DailyPlan> newDailyPlans = mapDailyPlansFromDTO(travelPlanDTO.getDailyPlan(), existingPlan);
-            existingPlan.setDailyPlans(newDailyPlans);
+            updateDailyPlansIntelligently(existingPlan, travelPlanDTO.getDailyPlan());
         }
 
         if (travelPlanDTO.getTips() != null) {
-            // 清除现有的提示
-            if (existingPlan.getTips() != null) {
-                existingPlan.getTips().clear();
-            }
-            // 重新设置新的提示
-            List<TravelTip> newTips = mapTipsFromDTO(travelPlanDTO.getTips(), existingPlan);
-            existingPlan.setTips(newTips);
+            updateTipsIntelligently(existingPlan, travelPlanDTO.getTips());
         }
 
         TravelPlan result = travelPlanRepository.save(existingPlan);
         return convertToDTO(result);
+    }
+
+    private void updateDailyPlansIntelligently(TravelPlan existingPlan, List<DailyPlanDTO> newDailyPlanDTOs) {
+        List<DailyPlan> existingDailyPlans = existingPlan.getDailyPlans();
+        if (existingDailyPlans == null) {
+            existingDailyPlans = new ArrayList<>();
+            existingPlan.setDailyPlans(existingDailyPlans);
+        }
+
+        // 创建一个Map来快速查找现有的DailyPlan（以dayNumber为key）
+        Map<Integer, DailyPlan> existingPlansByDay = existingDailyPlans.stream()
+                .collect(Collectors.toMap(DailyPlan::getDayNumber, Function.identity()));
+
+        // 收集需要保留的DayNumber
+        Set<Integer> updatedDayNumbers = newDailyPlanDTOs.stream()
+                .map(DailyPlanDTO::getDay)
+                .collect(Collectors.toSet());
+
+        // 移除不在更新列表中的DailyPlan
+        existingDailyPlans.removeIf(plan -> !updatedDayNumbers.contains(plan.getDayNumber()));
+
+        // 处理每个新的DailyPlanDTO
+        for (DailyPlanDTO dto : newDailyPlanDTOs) {
+            DailyPlan existingDailyPlan = existingPlansByDay.get(dto.getDay());
+
+            if (existingDailyPlan != null) {
+                // 更新现有记录
+                updateExistingDailyPlan(existingDailyPlan, dto);
+            } else {
+                // 创建新记录
+                DailyPlan newDailyPlan = mapSingleDailyPlan(dto, existingPlan);
+                existingDailyPlans.add(newDailyPlan);
+            }
+        }
+    }
+
+    private void updateExistingDailyPlan(DailyPlan existingDailyPlan, DailyPlanDTO dto) {
+        existingDailyPlan.setDayNumber(dto.getDay());
+        existingDailyPlan.setTheme(dto.getTheme());
+        existingDailyPlan.setMorning(dto.getMorning());
+        existingDailyPlan.setAfternoon(dto.getAfternoon());
+        existingDailyPlan.setEvening(dto.getEvening());
+        existingDailyPlan.setDate(dto.getDate());
+        existingDailyPlan.setDailyCost(dto.getDailyCost());
+
+        // 更新餐食信息
+        if (dto.getMeals() != null) {
+            existingDailyPlan.setBreakfast(dto.getMeals().getBreakfast());
+            existingDailyPlan.setLunch(dto.getMeals().getLunch());
+            existingDailyPlan.setDinner(dto.getMeals().getDinner());
+        }
+
+        // 更新住宿和交通信息
+        try {
+            if (dto.getAccommodation() != null) {
+                existingDailyPlan.setAccommodation(objectMapper.writeValueAsString(dto.getAccommodation()));
+            }
+            if (dto.getTransportation() != null) {
+                existingDailyPlan.setTransportation(objectMapper.writeValueAsString(dto.getTransportation()));
+            }
+        } catch (JsonProcessingException e) {
+            throw new DataSerializationException("住宿或交通信息序列化失败", e);
+        }
+    }
+
+    private void updateTipsIntelligently(TravelPlan existingPlan, List<String> newTips) {
+        List<TravelTip> existingTips = existingPlan.getTips();
+        if (existingTips == null) {
+            existingTips = new ArrayList<>();
+            existingPlan.setTips(existingTips);
+        }
+
+        // 清除现有提示，重新设置（提示相对简单，直接替换）
+        existingTips.clear();
+
+        // 添加新提示
+        for (String tipContent : newTips) {
+            TravelTip tip = new TravelTip();
+            tip.setTravelPlan(existingPlan);
+            tip.setTipContent(tipContent);
+            existingTips.add(tip);
+        }
     }
 
     private TravelPlanDTO convertToDTO(TravelPlan plan) {
