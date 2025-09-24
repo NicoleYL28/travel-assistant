@@ -4,13 +4,12 @@ import oocl.travelassistant.dto.PostDTO;
 import oocl.travelassistant.entity.Post;
 import oocl.travelassistant.exception.PostNotFoundException;
 import oocl.travelassistant.exception.UnauthorizedAccessException;
+import oocl.travelassistant.exception.UserNotFoundException;
 import oocl.travelassistant.repository.PostRepository;
 import oocl.travelassistant.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PostService {
@@ -25,7 +24,7 @@ public class PostService {
 
     public Post createPost(Long userId, PostDTO postDTO) {
         Post post = new Post();
-        post.setUser(userRepository.findById(userId).get());
+        post.setUser(userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found")));
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
         return postRepository.save(post);
