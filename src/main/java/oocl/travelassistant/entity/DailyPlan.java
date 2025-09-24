@@ -52,6 +52,9 @@ public class DailyPlan {
     @Column(name = "daily_cost", precision = 10, scale = 2)
     private BigDecimal dailyCost;
 
+    @Column(columnDefinition = "JSON")
+    private String locations; // JSON string for attraction locations
+
     public Long getId() {
         return id;
     }
@@ -162,5 +165,13 @@ public class DailyPlan {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getLocations() {
+        return locations;
+    }
+
+    public void setLocations(String locations) {
+        this.locations = locations;
     }
 }

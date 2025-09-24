@@ -1,6 +1,7 @@
 package oocl.travelassistant.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import oocl.travelassistant.dto.*;
 import oocl.travelassistant.entity.DailyPlan;
@@ -97,6 +98,10 @@ public class TravelPlanService {
             }
             if (dto.getTransportation() != null) {
                 dailyPlan.setTransportation(objectMapper.writeValueAsString(dto.getTransportation()));
+            }
+            // Convert locations to JSON string (new field)
+            if (dto.getLocations() != null) {
+                dailyPlan.setLocations(objectMapper.writeValueAsString(dto.getLocations()));
             }
         } catch (JsonProcessingException e) {
             throw new DataSerializationException("住宿或交通信息序列化失败", e);
@@ -246,6 +251,10 @@ public class TravelPlanService {
             if (dto.getTransportation() != null) {
                 existingDailyPlan.setTransportation(objectMapper.writeValueAsString(dto.getTransportation()));
             }
+            // Convert locations to JSON string (new field)
+            if (dto.getLocations() != null) {
+                existingDailyPlan.setLocations(objectMapper.writeValueAsString(dto.getLocations()));
+            }
         } catch (JsonProcessingException e) {
             throw new DataSerializationException("住宿或交通信息序列化失败", e);
         }
@@ -303,6 +312,11 @@ public class TravelPlanService {
                     }
                     if (d.getTransportation() != null) {
                         dailyDTO.setTransportation(objectMapper.readValue(d.getTransportation(), TransportationDTO.class));
+                    }
+                    // Convert locations JSON string back to list (new field)
+                    if (d.getLocations() != null) {
+                        dailyDTO.setLocations(objectMapper.readValue(d.getLocations(),
+                            new TypeReference<List<LocationDTO>>() {}));
                     }
                 } catch (Exception e) {
                     dailyDTO.setAccommodation(null);

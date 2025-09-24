@@ -1,6 +1,7 @@
 package oocl.travelassistant.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class DailyPlanDTO {
     private Integer day;
@@ -13,6 +14,7 @@ public class DailyPlanDTO {
     private AccommodationDTO accommodation;
     private TransportationDTO transportation;
     private BigDecimal dailyCost;
+    private List<LocationDTO> locations;
 
     public Integer getDay() {
         return day;
@@ -92,5 +94,13 @@ public class DailyPlanDTO {
 
     public void setDailyCost(BigDecimal dailyCost) {
         this.dailyCost = dailyCost;
+    }
+
+    public List<LocationDTO> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<LocationDTO> locations) {
+        this.locations = locations;
     }
 }
