@@ -63,5 +63,7 @@ public class PostService {
         return postRepository.findAllByUser_IdOrderByUpdatedAtDesc(userId, pageable);
     }
 
-
+    public Post getPostById(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Post not found with id: " + id));
+    }
 }

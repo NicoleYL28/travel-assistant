@@ -86,4 +86,13 @@ public class GlobalExceptionHandler {
         return resp;
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, Object> handleCommentNotFound(CommentNotFoundException ex) {
+        Map<String, Object> resp = new HashMap<>();
+        resp.put(CODE, 404);
+        resp.put(MESSAGE, ex.getMessage());
+        return resp;
+    }
 }

@@ -119,7 +119,7 @@ public class PostControllerTest {
         createAndSavePost("Post 1", "Content 1");
         createAndSavePost("Post 2", "Content 2");
 
-        mockMvc.perform(get("/api/posts?page=0&size=10")
+        mockMvc.perform(get("/api/posts?page=1&size=10")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
@@ -149,6 +149,25 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.totalElements").value(2))
                 .andExpect(jsonPath("$.content[0].title").value("My Post 2")) // Sorted by update time desc
                 .andExpect(jsonPath("$.content[1].title").value("My Post 1"));
+    }
+
+    @Test
+    void should_get_post_by_id_successfully() throws Exception {
+        Post post = createAndSavePost("Test Post Title", "Test Post Content");
+
+        mockMvc.perform(get("/api/posts/" + post.getId())
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(post.getId()))
+                .andExpect(jsonPath("$.title").value("Test Post Title"))
+                .andExpect(jsonPath("$.content").value("Test Post Content"));
+    }
+
+    @Test
+    void should_return_404_when_getting_non_existent_post() throws Exception {
+        mockMvc.perform(get("/api/posts/99999")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
     }
 
     @Test
