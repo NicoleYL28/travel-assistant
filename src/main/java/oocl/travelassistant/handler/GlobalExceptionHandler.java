@@ -1,9 +1,6 @@
 package oocl.travelassistant.handler;
 
-import oocl.travelassistant.exception.EmailExistsException;
-import oocl.travelassistant.exception.PasswordErrorException;
-import oocl.travelassistant.exception.UserNotFoundException;
-import oocl.travelassistant.exception.UsernameExistsException;
+import oocl.travelassistant.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -65,6 +62,26 @@ public class GlobalExceptionHandler {
     public Map<String, Object> handlePasswordError(PasswordErrorException ex) {
         Map<String, Object> resp = new HashMap<>();
         resp.put(CODE, 401);
+        resp.put(MESSAGE, ex.getMessage());
+        return resp;
+    }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, Object> handlePostNotFound(PostNotFoundException ex) {
+        Map<String, Object> resp = new HashMap<>();
+        resp.put(CODE, 404);
+        resp.put(MESSAGE, ex.getMessage());
+        return resp;
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public Map<String, Object> handleAccessForbidden(UnauthorizedAccessException ex) {
+        Map<String, Object> resp = new HashMap<>();
+        resp.put(CODE, 403);
         resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
