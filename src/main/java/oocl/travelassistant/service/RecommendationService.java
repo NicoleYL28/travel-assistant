@@ -3,6 +3,7 @@ package oocl.travelassistant.service;
 import oocl.travelassistant.dto.AssignTagsRequestDto;
 import oocl.travelassistant.entity.Recommendation;
 import oocl.travelassistant.repository.RecommendationRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -19,9 +20,10 @@ public class RecommendationService {
     }
 
     public List<Recommendation> getRecommendationsByTagId(List<Long> tagIds) {
-        if (tagIds == null || tagIds.isEmpty()) {
-            return recommendationRepository.findAll();
-        }
         return recommendationRepository.findByTagIdIn(tagIds);
+    }
+
+    public List<Recommendation> getAllRecommendations() {
+        return recommendationRepository.findAll();
     }
 }

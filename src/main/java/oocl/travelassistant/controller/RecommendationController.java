@@ -19,6 +19,10 @@ public class RecommendationController {
 
     @GetMapping
     public ResponseEntity<List<Recommendation>> getRecommendationsByTagId(AssignTagsRequestDto assignTagsRequestDto) {
+        if(assignTagsRequestDto == null || assignTagsRequestDto.getTagIds() == null || assignTagsRequestDto.getTagIds().isEmpty()) {
+            List<Recommendation> recommendations = recommendationService.getAllRecommendations();
+            return ResponseEntity.ok(recommendations);
+        }
         List<Recommendation> recommendations = recommendationService.getRecommendationsByTagId(assignTagsRequestDto.getTagIds());
         return ResponseEntity.ok(recommendations);
     }
