@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class TagService {
 
     private final TagRepository tagRepository;
+
     public TagService(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
@@ -20,4 +21,6 @@ public class TagService {
                 .map(tag -> new TagDTO(tag.getId(), tag.getName(), tag.getCategory()))
                 .collect(Collectors.toList());
     }
+
+
 }
