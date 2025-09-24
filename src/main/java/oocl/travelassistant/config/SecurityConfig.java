@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import oocl.travelassistant.security.CustomUserDetailsService;
 import oocl.travelassistant.security.JwtAuthenticationFilter;
 import oocl.travelassistant.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,9 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -71,10 +75,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 允许前端访问的地址
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "https://travel-agent-frontend-dev-dev.up.railway.app"
-        ));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         // 允许的请求方式
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         // 允许的请求头
