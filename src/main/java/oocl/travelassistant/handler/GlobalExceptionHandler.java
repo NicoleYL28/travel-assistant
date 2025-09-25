@@ -106,16 +106,4 @@ public class GlobalExceptionHandler {
         resp.put(MESSAGE, ex.getMessage());
         return resp;
     }
-
-    // 添加通用异常处理，捕获所有未处理的异常
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public Map<String, Object> handleGenericException(Exception ex) {
-        logger.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
-        Map<String, Object> resp = new HashMap<>();
-        resp.put(CODE, 500);
-        resp.put(MESSAGE, "Internal server error occurred");
-        return resp;
-    }
 }
