@@ -376,4 +376,29 @@ class TravelPlanControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void should_return_10_most_recent_travel_plans() throws Exception {
+        // Insert 12 travel plans with different titles
+        for (int i = 1; i <= 12; i++) {
+            TravelPlanDTO travelPlanDTO = createTravelPlanDTO();
+            travelPlanDTO.setTitle("Plan " + i);
+            String body = objectMapper.writeValueAsString(travelPlanDTO);
+            mockMvc.perform(post("/api/travel-plans")
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body))
+                    .andExpect(status().isOk());
+            // Optionally, sleep to ensure different timestamps
+            Thread.sleep(10);
+        }
+
+        // Call the /recent endpoint
+        mockMvc.perform(get("/api/travel-plans/recent"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].title").value("Plan 12"))
+                .andExpect(jsonPath("$[9].title").value("Plan 3"));
+    }
+
 }

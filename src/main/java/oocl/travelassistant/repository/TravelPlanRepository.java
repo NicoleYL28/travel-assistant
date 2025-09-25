@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface TravelPlanRepository extends JpaRepository<TravelPlan, Long> {
     List<TravelPlan> findByUserId(Long userId);
+
+    List<TravelPlan> findTop10ByOrderByCreatedAtDesc();
 }

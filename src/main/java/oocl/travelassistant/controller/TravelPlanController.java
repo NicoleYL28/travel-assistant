@@ -31,6 +31,12 @@ public class TravelPlanController {
         return ResponseEntity.ok(plans);
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<TravelPlanDTO>> getRecentTravelPlans() {
+        List<TravelPlanDTO> plans = travelPlanService.getRecentTravelPlanDTOs();
+        return ResponseEntity.ok(plans);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TravelPlanDTO> getTravelPlan(@PathVariable Long id) {
         TravelPlanDTO plan = travelPlanService.getTravelPlanDTOById(id);

@@ -129,6 +129,11 @@ public class TravelPlanService {
         return plan != null ? convertToDTO(plan) : null;
     }
 
+    public List<TravelPlanDTO> getRecentTravelPlanDTOs() {
+        List<TravelPlan> plans = travelPlanRepository.findTop10ByOrderByCreatedAtDesc();
+        return plans.stream().map(this::convertToDTO).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     @Transactional
     public boolean deleteTravelPlanByIdAndUserId(Long id, Long userId) {
         TravelPlan travelPlan = travelPlanRepository.findById(id).orElse(null);
