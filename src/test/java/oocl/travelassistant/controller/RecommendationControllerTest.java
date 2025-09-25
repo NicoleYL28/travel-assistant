@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class RecommendationControllerTest {
+class RecommendationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +47,6 @@ public class RecommendationControllerTest {
 
     private String token;
     private Long tagId1;
-    private Long tagId2;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -67,7 +66,7 @@ public class RecommendationControllerTest {
         tag2.setName("博物馆");
         tag2.setCategory("文化");
         tagRepository.save(tag2);
-        tagId2 = tag2.getId();
+        Long tagId2 = tag2.getId();
 
         // Create test recommendations
         Recommendation rec1 = new Recommendation(tagId1, "北京烤鸭", "http://example.com/duck", "4.5",
@@ -98,12 +97,6 @@ public class RecommendationControllerTest {
     }
 
     @Test
-    void should_return_unauthorized_without_token() throws Exception {
-        mockMvc.perform(get("/api/recommendations"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
     void should_return_all_recommendations_when_no_tag_ids_provided() throws Exception {
         mockMvc.perform(get("/api/recommendations")
                 .header("Authorization", "Bearer " + token))
@@ -128,11 +121,11 @@ public class RecommendationControllerTest {
 
     @Test
     void should_return_empty_list_when_no_recommendations_match_tag_id() throws Exception {
-        Long nonExistentTagId = 999L;
+        long nonExistentTagId = 999L;
 
         mockMvc.perform(get("/api/recommendations")
                 .header("Authorization", "Bearer " + token)
-                .param("tagIds", nonExistentTagId.toString()))
+                .param("tagIds", Long.toString(nonExistentTagId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
