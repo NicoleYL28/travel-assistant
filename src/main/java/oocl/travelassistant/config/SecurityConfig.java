@@ -48,8 +48,11 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/register",
                                 "/api/login",
-                                "/health").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/travel-plans/*").permitAll()
+                                "/health",
+                                "/api/recommendations/**")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/travel-plans/*")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -88,4 +91,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
