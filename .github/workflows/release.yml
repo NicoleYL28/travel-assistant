@@ -167,6 +167,11 @@ jobs:
       - name: Deploy to Railway PROD Service
         run: |
           echo "Starting deployment to Railway PROD..."
+          # Login to Railway using token
+          railway login --token ${{ secrets.RAILWAY_TOKEN }}
+          # Set project context
+          railway project set ${{ secrets.RAILWAY_PROJECT_ID }}
+          # Deploy to specific service
           railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
