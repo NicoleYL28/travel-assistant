@@ -13,8 +13,8 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "comments")
-@EqualsAndHashCode(exclude = {"post", "user", "parent", "replies"})
-@ToString(exclude = {"post", "user", "parent", "replies"})
+@EqualsAndHashCode(exclude = {"user", "replies"})
+@ToString(exclude = {"user", "replies"})
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
