@@ -166,16 +166,58 @@ jobs:
 
       - name: Deploy to Railway PROD Service
         run: |
+          set -Eeuo pipefail
           echo "Starting deployment to Railway PROD..."
-          # Login to Railway using token
-          railway login --token ${{ secrets.RAILWAY_TOKEN }}
-          # Set project context
-          railway project set ${{ secrets.RAILWAY_PROJECT_ID }}
-          # Deploy to specific service
-          railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
+
+          # 捕获错误时输出调试信息
+          trap 'echo "::group::Railway Debug Dump"; echo "~/.railway structure:"; ls -R ~/.railway 2>/dev/null || echo "(no ~/.railway)"; echo "Active processes (railway):"; ps -ef | grep -i railway || true; echo "Disk usage:"; df -h; echo "::endgroup::"' ERR
+
+          echo "::group::Environment Summary"
+          echo "Runner: $(uname -a)"
+          echo "Commit: ${GITHUB_SHA}"
+          echo "Java:"; java -version 2>&1 | head -n1 || true
+          echo "Gradle artifacts (build/libs):"; ls -lh build/libs || echo "(no build/libs)"
+          echo "Token length: ${#RAILWAY_TOKEN} (content hidden)"
+          echo "Project ID (first 8): ${RAILWAY_PROJECT_ID:0:8}..."
+          echo "Service ID (first 8): ${RAILWAY_SERVICE_ID:0:8}..."
+          echo "Free memory:"; free -m || true
+          echo "::endgroup::"
+
+          echo "Cleaning previous Railway state..."
+          rm -rf ~/.railway || true
+
+          echo "Railway CLI version:"
+          railway --version || true
+
+          echo "Logging in (non-interactive)..."
+          railway login --token "$RAILWAY_TOKEN"
+
+          echo "Verifying login by listing services (masked failures allowed)..."
+          (railway services --project "$RAILWAY_PROJECT_ID" || true)
+
+          echo "Starting primary deploy (time measured)..."
+          start_ts=$(date +%s)
+          if ! railway up --project "$RAILWAY_PROJECT_ID" --service "$RAILWAY_SERVICE_ID"; then
+            echo "Primary deploy failed, retrying with fresh state..."
+            echo "::group::First Failure Context"; ls -la ~/.railway 2>/dev/null || true; echo "::endgroup::"
+            rm -rf ~/.railway || true
+            railway login --token "$RAILWAY_TOKEN"
+            echo "Retrying deploy..."
+            railway up --project "$RAILWAY_PROJECT_ID" --service "$RAILWAY_SERVICE_ID"
+          fi
+          end_ts=$(date +%s)
+          echo "Deploy duration: $((end_ts-start_ts))s"
+
+          echo "::group::Post-Deploy Status"
+          railway status --project "$RAILWAY_PROJECT_ID" || true
+          echo "Listing latest deployments (if supported)..."
+          railway deployments --project "$RAILWAY_PROJECT_ID" --service "$RAILWAY_SERVICE_ID" 2>/dev/null || true
+          echo "::endgroup::"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+          RAILWAY_LOG_LEVEL: debug
 
       - name: PROD Health Check
         run: |
